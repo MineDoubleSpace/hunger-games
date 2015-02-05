@@ -7,6 +7,6 @@ public class GameTimer {
 	public void startTask() {
 		GameTask task = new GameTask();
 		GameRunnable runnable = new GameRunnable(task);
-		Core.getInstance().getServer().getScheduler().scheduleSyncRepeatingTask(Core.getInstance(), runnable, 20L, 20L);
+		Core.get().getServer().getScheduler().scheduleSyncRepeatingTask(Core.get(), runnable, 20L, 20L);
 	}
 }

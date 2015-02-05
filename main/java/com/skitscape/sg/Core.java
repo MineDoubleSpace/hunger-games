@@ -1,51 +1,69 @@
 package com.skitscape.sg;
 
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.skitscape.sg.SPlayer.PlayerStatus;
 import com.skitscape.sg.game.GameTimer;
+import com.skitscape.sg.listeners.PlayerListener;
+import com.skitscape.sg.maps.Map;
+import com.skitscape.sg.maps.MapConfig;
 
 public class Core extends JavaPlugin {
-	
+
 	//Game instance 
 	private static Core instance;
 	public static boolean debug = true;
-	
-	//Game settings
+
+	//Game info
 	private int maxPlayers;
 	private int minPlayers;
-	
+	private int joinedMaxPlayers;
+
+	private GameTimer timer;
+
+	private Map map;
+
 	@Override
 	public void onEnable() {
 		instance = this;
-		reload();
-		
-		//Start game tasks
-		GameTimer timer = new GameTimer();
-		timer.startTask();
-	}
 
+		registerEvents();
+
+		reload();
+
+		map = new Map();
+		map.load("map.zip");
+
+		//Start game tasks
+		timer = new GameTimer();
+		timer.startTask();
+
+		registerPlayers();
+	}
 
 	public void reload() {
 		saveDefaultConfig();
 		reloadConfig();
-		
-		
-		/*
-		 * 
-		 * spawns:
-		 *   spawn1:
-		 *     x: 1 
-		 * 
-		 */
+		//temp one for testing
+		minPlayers = getConfig().getInt("min-players", 2);
+	}
 
-		minPlayers = getConfig().getInt("min-players", 5);
+	public void registerEvents() {
+		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+	}
+
+	//debug method.
+	public void registerPlayers() {
+		for (Player pl : getServer().getOnlinePlayers()) {
+			new SPlayer(pl, PlayerStatus.PLAYER);
+		}
 	}
 	
-	public static Core getInstance() {
-		return instance;
+	public void setMaxPlayers(int max) {
+		this.maxPlayers = max;
 	}
-	
-	
+
 	public int getMaxPlayers() {
 		return maxPlayers;
 	}
@@ -53,7 +71,25 @@ public class Core extends JavaPlugin {
 	public int getMinPlayers() {
 		return minPlayers;
 	}
+
+	public int getJoinedMaxPlayers() {
+		return joinedMaxPlayers;
+	}
+
+	public void setJoinedMaxPlayers(int joinedMaxPlayers) {
+		this.joinedMaxPlayers = joinedMaxPlayers;
+	}
+
+	public Map getMap() {
+		return this.map;
+	}
 	
-	
+	public MapConfig getMapConfig() {
+		return this.map.getConfig();
+	}
+
+	public static Core get() {
+		return instance;
+	}
 
 }

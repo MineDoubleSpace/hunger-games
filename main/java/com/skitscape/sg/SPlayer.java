@@ -2,6 +2,7 @@ package com.skitscape.sg;
 
 import java.util.List;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import com.google.common.collect.Lists;
@@ -15,39 +16,38 @@ public class SPlayer {
 	//player info
 	private Player player;
 	private PlayerStatus status;
+	private int spawnid;
+	private Location spawn;
 
 	public SPlayer(Player player, PlayerStatus status) {
 		this.player = player;
 		this.status = status;
 		players.add(this);
 	}
-	
-	public void lobby() {
-		
-	}
 
-	public void RemovePlayer(SPlayer p) {
-		if (players.contains(p)) players.remove(p);
-	}
-
-	public PlayerStatus getStatus() {
-		return this.status;
+	public void remove() {
+		players.remove(this);
 	}
 
 	public void sendMessage(String msg) {
 		this.player.sendMessage(msg);
 	}
-	
+
 	public void makeSpectator() {
 		this.status = PlayerStatus.SPECTATOR;
+		this.player.setAllowFlight(true);
 		this.player.setFlying(true);
-		
+
 		//hide sepectator 
-		for (SPlayer sp : getPlayers()) {
+		for (SPlayer sp : getSPlayers()) {
 			if (sp.status == PlayerStatus.PLAYER) {
 				sp.player.hidePlayer(this.player);
 			}
 		}
+	}
+
+	public void setStatus(PlayerStatus s) {
+		this.status = s;
 	}
 
 	public static SPlayer getSPlayer(Player p) {
@@ -56,9 +56,13 @@ public class SPlayer {
 		}
 		return null;
 	}
-	
+
 	public static int waitingCount() {
 		return players.size();
+	}
+
+	public static List<SPlayer> getSPlayers() {
+		return players;
 	}
 
 	public static int playingCount() {
@@ -71,19 +75,47 @@ public class SPlayer {
 		}
 		return 0;
 	}
-	
+
+	public static void lightning() {
+		for (SPlayer sp : players) {
+			if (sp.getStatus() == PlayerStatus.PLAYER) {
+				Core.get().getMap().getWorld().strikeLightningEffect(sp.getPlayer().getLocation());
+			}
+		}
+	}
+
 	public static void sendMessageAll(String msg) {
-		for (SPlayer sp : getPlayers()) {
+		for (SPlayer sp : getSPlayers()) {
 			sp.sendMessage(msg);
 		}
 	}
-	
-	public static List<SPlayer> getPlayers() {
-		return players;
+
+	public PlayerStatus getStatus() {
+		return this.status;
+	}
+
+	public Player getPlayer() {
+		return this.player;
+	}
+
+	public int getSpawnid() {
+		return spawnid;
+	}
+
+	public void setSpawnid(int spawnid) {
+		this.spawnid = spawnid;
+	}
+
+	public Location getSpawn() {
+		return spawn;
+	}
+
+	public void setSpawn(Location spawn) {
+		this.spawn = spawn;
 	}
 
 	public enum PlayerStatus {
-		PLAYER, SPECTATOR
+		PLAYER, SPECTATOR, ADMIN
 	}
 
 }

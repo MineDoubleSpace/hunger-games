@@ -5,15 +5,14 @@ import java.util.logging.Logger;
 
 import com.skitscape.sg.Core;
 
-
 public class Log {
 
 	private static Logger log;
 
-	private static boolean debug = false;
+	private static boolean debug = true;
 
 	static {
-		log = Core.getInstance().getLogger();
+		log = Core.get().getLogger();
 	}
 
 	public static void log(Level lvl, String msg) {
@@ -36,16 +35,6 @@ public class Log {
 	public static void log(String log, String debug) {
 		log(log);
 		if (Log.debug) log(debug);
-	}
-
-	public static void response(String name, String s) {
-		if (debug) {
-			log("   ------------- " + " MinecraftMarket Debug " + name + " -------------    ");
-			log("   " + s);
-			log("   --------------------------------------------------------------------   ");
-			log(" ");
-		}
-
 	}
 
 	public static void setDebugging(boolean debug) {
