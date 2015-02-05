@@ -37,9 +37,6 @@ public class PlayerListener implements Listener {
 			if (sp.getStatus() == PlayerStatus.SPECTATOR) {
 				event.setCancelled(true);
 			}
-			if (SPlayer.getSPlayer((Player) event.getEntity()).getStatus() == PlayerStatus.SPECTATOR) {
-				event.setCancelled(true);
-			}
 		}
 		//TODO prevent spectator from damaging entities
 	}
