@@ -18,6 +18,7 @@ public class SPlayer {
 	private PlayerStatus status;
 	private int spawnid;
 	private Location spawn;
+	private Location deathLocation;
 
 	public SPlayer(Player player, PlayerStatus status) {
 		this.player = player;
@@ -112,6 +113,14 @@ public class SPlayer {
 
 	public void setSpawn(Location spawn) {
 		this.spawn = spawn;
+	}
+
+	public Location getDeathLocation() {
+		return deathLocation;
+	}
+
+	public void setDeathLocation(Location death) {
+		this.deathLocation = death;
 	}
 
 	public enum PlayerStatus {

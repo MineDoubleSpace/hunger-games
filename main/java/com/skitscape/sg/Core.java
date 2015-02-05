@@ -4,7 +4,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.skitscape.sg.SPlayer.PlayerStatus;
+import com.skitscape.sg.game.GameState;
 import com.skitscape.sg.game.GameTimer;
+import com.skitscape.sg.game.GameState.GameStatus;
 import com.skitscape.sg.listeners.PlayerListener;
 import com.skitscape.sg.maps.Map;
 import com.skitscape.sg.maps.MapConfig;
@@ -27,6 +29,8 @@ public class Core extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		instance = this;
+		
+		GameState.setStatus(GameStatus.LOADING);
 
 		registerEvents();
 
@@ -40,6 +44,8 @@ public class Core extends JavaPlugin {
 		timer.startTask();
 
 		registerPlayers();
+		
+		GameState.setStatus(GameStatus.WAITING);
 	}
 
 	public void reload() {

@@ -5,9 +5,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 import com.skitscape.sg.Core;
 import com.skitscape.sg.SPlayer;
@@ -29,17 +32,16 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void OnPVP(EntityDamageByEntityEvent event) {
-		if (event.getDamager() instanceof Player) {
+		if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
 			SPlayer sp = SPlayer.getSPlayer((Player) event.getDamager());
 			if (sp.getStatus() == PlayerStatus.SPECTATOR) {
 				event.setCancelled(true);
 			}
-		}
-		if (event.getEntity() instanceof Player) {
 			if (SPlayer.getSPlayer((Player) event.getEntity()).getStatus() == PlayerStatus.SPECTATOR) {
 				event.setCancelled(true);
 			}
 		}
+		//TODO prevent spectator from damaging entities
 	}
 
 	@EventHandler
@@ -48,6 +50,23 @@ public class PlayerListener implements Listener {
 		if (sp.getStatus() != PlayerStatus.ADMIN) {
 			e.setCancelled(true);
 		}
+	}
+
+	@EventHandler
+	public void onPlayerDeath(PlayerDeathEvent e) {
+		SPlayer sp = SPlayer.getSPlayer(e.getEntity());
+		if (GameState.isOn()) {
+			sp.setDeathLocation(e.getEntity().getLocation());
+			sp.makeSpectator();
+		}
+		if (GameState.isWaiting()) {
+			sp.getPlayer().teleport(sp.getSpawn());
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerRespawn(PlayerRespawnEvent event) {
+		event.getPlayer().teleport(SPlayer.getSPlayer(event.getPlayer()).getDeathLocation());
 	}
 
 	@EventHandler
@@ -65,6 +84,13 @@ public class PlayerListener implements Listener {
 			if (e.getFrom().getBlockX() != e.getTo().getBlockX() || e.getFrom().getBlockY() != e.getTo().getBlockY() || e.getFrom().getBlockZ() != e.getTo().getBlockZ()) {
 				e.getPlayer().teleport(e.getFrom());
 			}
+		}
+	}
+
+	@EventHandler
+	public void onPlayerDropItem(PlayerDropItemEvent event) {
+		if (SPlayer.getSPlayer(event.getPlayer()).getStatus() == PlayerStatus.SPECTATOR) {
+			event.setCancelled(true);
 		}
 	}
 

@@ -9,7 +9,7 @@ import com.skitscape.sg.game.GameState.GameStatus;
 import com.skitscape.sg.util.Log;
 
 public class GameTask {
-	int STARTING_GAME = 5;
+	int STARTING_GAME = 20;
 	int GAME_TIME = 1200;
 	int STARTING_FINAL = 60;
 	int LIGHTNING = 20;
