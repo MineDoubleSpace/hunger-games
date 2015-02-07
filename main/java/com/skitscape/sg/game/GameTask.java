@@ -1,7 +1,13 @@
 package com.skitscape.sg.game;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
+import org.bukkit.FireworkEffect.Type;
+import org.bukkit.entity.Firework;
+import org.bukkit.inventory.meta.FireworkMeta;
 
 import com.skitscape.sg.Core;
 import com.skitscape.sg.SPlayer;
@@ -13,6 +19,7 @@ public class GameTask {
 	int GAME_TIME = 1200;
 	int STARTING_FINAL = 60;
 	int LIGHTNING = 20;
+	int ENDING = 30;
 	boolean isLIGHTNING = false;
 
 	public void onSecond() {
@@ -63,6 +70,26 @@ public class GameTask {
 			}
 			STARTING_FINAL--;
 		}
+		if (GameState.isEnding()) {
+			if (ENDING != 0) {
+				timedMessage(ENDING, new int[] { 20, 10, 5, 4, 3, 2, 1 }, "&aGame ending in &c%time% &aseconds");
+				firework();
+				if (ENDING == 1) {
+					GameState.setStatus(GameStatus.RESTARTING);
+					SPlayer.kickAll();
+				}
+				ENDING--;
+			}
+		}
+		if (GameState.isRestarting()) {
+			restart();
+		}
+	}
+
+	private void restart() {
+		Bukkit.getServer().shutdown();
+		//TODO clean up map, extract location, world.zip
+		//TODO check for update and update if available
 	}
 
 	public void start() {
@@ -92,7 +119,17 @@ public class GameTask {
 
 	public void ending() {
 		GameState.setStatus(GameStatus.ENDING);
-		//End the game and do something with winner
+		SPlayer.sendMessageAll("&9&l" + SPlayer.getWinner().getName() + "&f&a has won survival games!");
+
+	}
+
+	private void firework() {
+		Firework firework = (Firework) Core.get().getMap().getWorld().spawn(SPlayer.getWinner().getPlayer().getLocation().add(0, 2, 0), Firework.class);
+
+		FireworkMeta meta = firework.getFireworkMeta();
+		meta.addEffect(FireworkEffect.builder().flicker(false).trail(true).with(Type.CREEPER).withColor(Color.GREEN).withFade(Color.BLUE).build());
+		meta.setPower(0);
+		firework.setFireworkMeta(meta);
 	}
 
 }

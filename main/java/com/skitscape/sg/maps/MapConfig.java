@@ -10,7 +10,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import com.google.common.collect.Lists;
 import com.skitscape.sg.Core;
 import com.skitscape.sg.SPlayer;
-import com.skitscape.sg.util.Log;
 
 public class MapConfig {
 
@@ -24,7 +23,8 @@ public class MapConfig {
 		mapConf = YamlConfiguration.loadConfiguration(mapFile);
 		//load the spawn points
 		Core.get().setMaxPlayers(mapConf.getConfigurationSection("spawns").getKeys(false).size());
-		Log.debug("Max: " + Core.get().getMaxPlayers());
+		Core.get().setMaxLoc(getLoc("world.max."));
+		Core.get().setMinLoc(getLoc("world.min."));
 	}
 	
 	/*
@@ -34,7 +34,16 @@ public class MapConfig {
 	 *     y: 100
 	 *     z: 100
 	 *     yaw: 100
-	 *     pitch: 100 
+	 *     pitch: 100
+	 * world:
+	 *   max: 100
+	 *     x: 100
+	 *     y: 100
+	 *     z: 100
+	 *   min:
+	 *     x: 100
+	 *     y: 100
+	 *     z: 100
 	 */
 	
 	public Location getNextAvailable(SPlayer sp) {
@@ -67,6 +76,14 @@ public class MapConfig {
 		float pitch = (float) getConfig().getDouble(path + "pitch");
 		float yaw = (float) getConfig().getDouble(path + "yaw");		
 		return new Location(Core.get().getMap().getWorld(), x, y, z, yaw, pitch);
+	}
+	
+	//
+	private Location getLoc(String path) {
+		double x = getConfig().getDouble(path + "x");
+		double y = (double) getConfig().getDouble(path + "y");
+		double z = (double) getConfig().getDouble(path + "z");
+		return new Location(Core.get().getMap().getWorld(), x, y, z);
 	}
 
 	public FileConfiguration getConfig() {

@@ -6,7 +6,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Random;
 
-public class DownloadUtil {
+public class Download {
 	
 	public static void start(String link, File download) {
 		Log.log("--- Getting ready to download map ---");

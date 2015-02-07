@@ -1,7 +1,8 @@
 name: SurvivalGames
 main: com.skitscape.sg.Core
 version: 0.1
-website: http://skitscape.com
+author: MineDoubleSpace
+depend: [WorldEdit]
 commands:
     sg:
         description: Sg command

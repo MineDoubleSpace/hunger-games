@@ -2,6 +2,7 @@ package com.skitscape.sg;
 
 import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -19,6 +20,7 @@ public class SPlayer {
 	private int spawnid;
 	private Location spawn;
 	private Location deathLocation;
+	private static SPlayer winner;
 
 	public SPlayer(Player player, PlayerStatus status) {
 		this.player = player;
@@ -31,7 +33,7 @@ public class SPlayer {
 	}
 
 	public void sendMessage(String msg) {
-		this.player.sendMessage(msg);
+		this.player.sendMessage(Core.getPrefix() + ChatColor.translateAlternateColorCodes('&', msg));
 	}
 
 	public void makeSpectator() {
@@ -89,6 +91,29 @@ public class SPlayer {
 		for (SPlayer sp : getSPlayers()) {
 			sp.sendMessage(msg);
 		}
+	}
+
+	public static SPlayer getWinner() {
+		if (GameState.isEnding()) {
+			if (winner != null) return winner;
+			for (SPlayer sp : getSPlayers()) {
+				if (sp.getStatus() == PlayerStatus.PLAYER) {
+					winner = sp;
+					return sp;
+				}
+			}
+		}
+		return null;
+	}
+
+	public static void kickAll() {
+		for (SPlayer sp : getSPlayers()) {
+			sp.getPlayer().kickPlayer(ChatColor.RED + "Server is restarting!");
+		}
+	}
+
+	public String getName() {
+		return this.player.getName();
 	}
 
 	public PlayerStatus getStatus() {

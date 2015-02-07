@@ -1,15 +1,23 @@
 package com.skitscape.sg;
 
+import java.util.logging.Level;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.skitscape.sg.SPlayer.PlayerStatus;
 import com.skitscape.sg.game.GameState;
-import com.skitscape.sg.game.GameTimer;
 import com.skitscape.sg.game.GameState.GameStatus;
+import com.skitscape.sg.game.GameTimer;
 import com.skitscape.sg.listeners.PlayerListener;
 import com.skitscape.sg.maps.Map;
 import com.skitscape.sg.maps.MapConfig;
+import com.skitscape.sg.util.Log;
 
 public class Core extends JavaPlugin {
 
@@ -21,6 +29,10 @@ public class Core extends JavaPlugin {
 	private int maxPlayers;
 	private int minPlayers;
 	private int joinedMaxPlayers;
+	private Location minLoc;
+	private Location maxLoc;
+
+	private static final String prefix = ChatColor.BLUE + "[" + ChatColor.GREEN + "Survival Games" + ChatColor.BLUE + "]" + ChatColor.RESET;
 
 	private GameTimer timer;
 
@@ -29,7 +41,7 @@ public class Core extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		instance = this;
-		
+
 		GameState.setStatus(GameStatus.LOADING);
 
 		registerEvents();
@@ -44,7 +56,7 @@ public class Core extends JavaPlugin {
 		timer.startTask();
 
 		registerPlayers();
-		
+
 		GameState.setStatus(GameStatus.WAITING);
 	}
 
@@ -52,7 +64,7 @@ public class Core extends JavaPlugin {
 		saveDefaultConfig();
 		reloadConfig();
 		//temp one for testing
-		minPlayers = getConfig().getInt("min-players", 2);
+		minPlayers = getConfig().getInt("min-players", 3);
 	}
 
 	public void registerEvents() {
@@ -65,7 +77,37 @@ public class Core extends JavaPlugin {
 			new SPlayer(pl, PlayerStatus.PLAYER);
 		}
 	}
-	
+
+	public MapConfig getMapConfig() {
+		return this.map.getConfig();
+	}
+
+	public WorldEditPlugin getWorldEdit() {
+		Plugin pl = Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
+		if (pl instanceof WorldEditPlugin) {
+			return (WorldEditPlugin) pl;
+		}
+		Log.log(Level.WARNING, "World edit was not found on the server. Shutting down server. Please install WorldEdit and restart the server.");
+		getServer().shutdown();
+		return null;
+	}
+
+	public Location getMaxLoc() {
+		return maxLoc;
+	}
+
+	public void setMaxLoc(Location maxLoc) {
+		this.maxLoc = maxLoc;
+	}
+
+	public Location getMinLoc() {
+		return minLoc;
+	}
+
+	public void setMinLoc(Location minLoc) {
+		this.minLoc = minLoc;
+	}
+
 	public void setMaxPlayers(int max) {
 		this.maxPlayers = max;
 	}
@@ -90,8 +132,8 @@ public class Core extends JavaPlugin {
 		return this.map;
 	}
 	
-	public MapConfig getMapConfig() {
-		return this.map.getConfig();
+	public static String getPrefix() {
+		return prefix + " ";
 	}
 
 	public static Core get() {
