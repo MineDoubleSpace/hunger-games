@@ -3,6 +3,7 @@ package com.skitscape.sg;
 import java.util.List;
 
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -40,6 +41,7 @@ public class SPlayer {
 		this.status = PlayerStatus.SPECTATOR;
 		this.player.setAllowFlight(true);
 		this.player.setFlying(true);
+		this.player.setGameMode(GameMode.SPECTATOR);
 
 		//hide sepectator 
 		for (SPlayer sp : getSPlayers()) {
