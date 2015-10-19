@@ -14,7 +14,7 @@ import com.skitscape.sg.util.Zip;
 
 public class Map {
 
-	private final String MAP_SERVER = "http://204.44.86.140/";
+	private final String MAP_SERVER = "http://";
 	private World w;
 	private MapConfig conf;
 
